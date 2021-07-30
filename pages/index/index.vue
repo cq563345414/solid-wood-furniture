@@ -2,9 +2,8 @@
 	<view class="container">
 		<!-- 小程序头部兼容 -->
 		<!-- #ifdef MP -->
-		<view class="mp-search-box">
-			<input class="ser-input" type="text" value="输入关键字搜索"  />
-		</view>
+		<uni-search-bar @confirm="search" :focus="true" v-model="searchValue" @blur="blur" @focus="focus" @input="input" @cancel="cancel" @change="change" @clear="clear">
+		</uni-search-bar>
 		<!-- #endif -->
 		<!-- 头部轮播 -->
 		<view class="carousel-section">
@@ -57,7 +56,7 @@
 				carouselList: [],
 				goodsList: [],
 				indexCateList:[],
-				searchValue:'搜索',
+				searchValue:'',
 			};
 		},
 
@@ -98,6 +97,22 @@
 					url: `/pages/product/list?fid=${fid}`
 				})
 			},
+			search(res) {
+				uni.showToast({
+					title: '搜索：' + res.value,
+					icon: 'none'
+				})
+			},
+			input(res) {
+			},
+			clear(res) {
+			},
+			blur(res) {
+			},
+			focus(e) {
+			},
+			cancel(res) {
+			}
 			
 		},
 		// #ifndef MP
