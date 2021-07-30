@@ -7,7 +7,7 @@ const userInfo = {
 		nickname: 'Leo yo',
 		portrait: 'http://img.61ef.cn/news/201409/28/2014092805595807.jpg'
 	},
-	msg: '提示'
+	msg: '提示'   
 }
 /* 首页轮播图 */
 const carouselList = [{
