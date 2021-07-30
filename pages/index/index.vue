@@ -1,14 +1,10 @@
 <template>
 	<view class="container">
-		<!-- 小程序头部兼容 -->
-		<!-- #ifdef MP -->
+		<!-- 搜索 -->
 		<uni-search-bar @confirm="search" :focus="true" v-model="searchValue" @blur="blur" @focus="focus" @input="input" @cancel="cancel" @change="change" @clear="clear">
 		</uni-search-bar>
-		<!-- #endif -->
 		<!-- 头部轮播 -->
 		<view class="carousel-section">
-			<!-- 标题栏和状态栏占位符 -->
-			<view class="titleNview-placing"></view>
 			<!-- 背景色区域 -->
 			<view class="titleNview-background" ></view>
 			<swiper class="carousel" circular @change="swiperChange">
@@ -39,8 +35,6 @@
 				</view>
 			</view>
 		</view>
-		
-
 	</view>
 </template>
 
