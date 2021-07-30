@@ -1,8 +1,9 @@
 <template>
 	<view class="container">
 		<view class="detail-desc">
-			<view >
-				<img :src="item.src" class="item-r" alt=""  @click="choosed(item,index)" :key="index" v-for="(item,index) in imgList" ref='liId' style="float: left;width:23.75%;margin-top:1%;margin-left:1%;"  >
+			<view class="item-r"  alt=""  @click="choosed(item,index)" :key="index" v-for="(item,index) in imgList" ref='liId' style="float: left;width:178.125upx;margin-top:7.5upx;margin-left:7.5upx;"  >
+				<img :src="item.src" width='100%'>
+				<view class='choose' v-if='item.isShow'></view>
 			</view>
 		</view>
 		<!-- 底部操作菜单 -->
@@ -26,27 +27,33 @@
 				imgList: [
 					{
 						id:1,
-						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg'
+						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg',
+						isShow:false,
 					},
 					{
 						id:2,
-						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg'
+						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg',
+						isShow:false,
 					},
 					{
 						id:3,
-						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg'
+						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg',
+						isShow:false,
 					},
 					{
 						id:4,
-						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg'
+						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg',
+						isShow:false,
 					},
 					{
 						id:5,
-						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg'
+						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg',
+						isShow:false,
 					},
 					{
 						id:6,
-						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg'
+						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg',
+						isShow:false,
 					}
 				],
 			};
@@ -57,38 +64,41 @@
 			// 多选
 			choosed(item,index) {
 				var idx = this.checkBox.indexOf(index);
-				console.log(this)
 				this.$nextTick(function(){
-					if(this.$refs.liId[index].className == 'item-r') {
+					if(!this.imgList[index].isShow) {
 						// 添加类--选中状态
-						this.$refs.liId[index].className = 'item-r choose';
+						this.imgList[index].isShow= true;
 						this.checkBox.push(item);
 					} else {
 						// 选中再取消
-						this.$refs.liId[index].className = 'item-r';
+						this.imgList[index].isShow= false;
 						this.checkBox.splice(idx, 1);
 					}
 				})
+				console.log(this.checkBox)
 			},
 			//图片下载
 			imgDow(){
-				this.checkBox.forEach(function(e) {
-					uni.downloadFile({
-						url: e.src,
-						success: (res) => {
-							if (res.statusCode === 200) {
-								uni.saveImageToPhotosAlbum({
-									filePath: res.tempFilePath,
-									success: (res) => {
-										console.log('保存成功');
-									},
-									fail: () => console.log('保存失败')
-								 })
-								console.log('下载成功');
+				this.$nextTick(function(){
+					this.checkBox.forEach(function(e) {
+						uni.downloadFile({
+							url: e.src,
+							success: (res) => {
+								if (res.statusCode === 200) {
+									uni.saveImageToPhotosAlbum({
+										filePath: res.tempFilePath,
+										success: (res) => {
+											console.log('保存成功');
+										},
+										fail: () => console.log('保存失败')
+									 })
+									console.log('下载成功');
+								}
 							}
-						}
-					 });
+						 });
+					})
 				})
+				
 			},
 			//图片下载并复制文本
 			downAll(){
@@ -130,11 +140,10 @@
 		background: #fff;
 		margin-top: 32upx;
 		clear: both;
-		.choose{
-			filter: alpha(opacity=20);
-			opacity: 0.2;
+		.item-r{
 			position: relative;
-			&.choose::after {
+		}
+		.choose::after{
 			 content: '✔';
 			 display: block;
 			 height: 0px;
@@ -148,7 +157,6 @@
 			 line-height: 16upx;
 			 border: 20upx solid;
 			 border-color: transparent #4884ff #4884ff transparent;
-		   }
 		}
 	}
 	

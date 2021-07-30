@@ -82,6 +82,15 @@
                 "enablePullDownRefresh": true
             }
             
+        },
+		{
+            "path" : "pages/search-bar/search-bar",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "搜索",
+                "enablePullDownRefresh": true
+            }
+            
         }
     ],
 	"globalStyle": {

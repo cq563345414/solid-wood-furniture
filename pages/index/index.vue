@@ -3,7 +3,7 @@
 		<!-- 小程序头部兼容 -->
 		<!-- #ifdef MP -->
 		<view class="mp-search-box">
-			<input class="ser-input" type="text" value="输入关键字搜索" />
+			<input class="ser-input" type="text" value="输入关键字搜索"  />
 		</view>
 		<!-- #endif -->
 		<!-- 头部轮播 -->
@@ -57,6 +57,7 @@
 				carouselList: [],
 				goodsList: [],
 				indexCateList:[],
+				searchValue:'搜索',
 			};
 		},
 
@@ -96,12 +97,15 @@
 				uni.navigateTo({
 					url: `/pages/product/list?fid=${fid}`
 				})
-			}
+			},
+			
 		},
 		// #ifndef MP
 		// 标题栏input搜索框点击
 		onNavigationBarSearchInputClicked: async function(e) {
-			this.$api.msg('');
+			uni.navigateTo({
+				url: `/pages/search-bar/search-bar`
+			})
 		},
 		//点击导航栏 buttons 时触发
 		onNavigationBarButtonTap(e) {
