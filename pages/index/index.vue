@@ -61,6 +61,14 @@
 			 * 分次请求未作整合
 			 */
 			async loadData() {
+				let res = await this.$axios.get('https://hm.zhugokeji.com/index.php/api/api/index_banner', {
+					params: {
+						pageNo: 1,
+						pageSize: 99,
+						type: 6
+					}
+				})
+				this.researchList = res.data.retData.list
 				let carouselList = await this.$api.json('carouselList');
 				this.titleNViewBackground = carouselList[0].background;
 				this.swiperLength = carouselList.length;
