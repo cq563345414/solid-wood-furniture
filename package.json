@@ -1,0 +1,20 @@
+{
+  "name": "solid-wood-furniture",
+  "version": "1.0.0",
+  "description": "{**When you're done, you can delete the content in this README and update the file with details for others getting started with your repository**}",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/cq18250703562/solid-wood-furniture.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "qs": "^6.10.1",
+    "vue-axios": "^3.2.5"
+  }
+}

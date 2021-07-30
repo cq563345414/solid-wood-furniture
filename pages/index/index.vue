@@ -13,7 +13,7 @@
 		</view>
 		<!-- 分类 -->
 		<view class="cate-section">
-			<view class="cate-item" @click="navToList(item.id)" v-for="(item,index) in indexCateList">
+			<view class="cate-item" @click="navToList(item.id)" v-for="(item,index) in indexCateList" :key="index">
 				<image :src="item.picture"></image>
 				<text>{{item.name}}</text>
 			</view>
@@ -61,14 +61,30 @@
 			 * 分次请求未作整合
 			 */
 			async loadData() {
-				let res = await this.$axios.get('https://hm.zhugokeji.com/index.php/api/api/index_banner', {
+				let res = await this.$axios.get('/API/index_banner', {
 					params: {
 						pageNo: 1,
 						pageSize: 99,
 						type: 6
-					}
-				})
-				this.researchList = res.data.retData.list
+					},
+					transformRequest:[
+                        function(data){
+                        },
+                    ],
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+                    },
+                    dataType:"json",
+                })
+                .then((res) => {
+                    console.log("连接成功");//这里打印出来是为了更直观的看到连接成功了
+                    console.log(res); //res是后端返回来的数据，如果连接成功，则把res打印出来
+                })
+                .catch(function(error){
+                    console.log("连接失败");
+                    console.log(error); //如果连接失败，则抛出错误的信息
+                });
+				// this.researchList = res.data.retData.list
 				let carouselList = await this.$api.json('carouselList');
 				this.titleNViewBackground = carouselList[0].background;
 				this.swiperLength = carouselList.length;
