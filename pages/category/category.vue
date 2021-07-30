@@ -4,16 +4,13 @@
 			<view class="s-list">
 				<view class="t-list">
 					<view @click="navToList(item.id)" class="t-item" v-for="item in cateList">
-						<text>{{item.name}}1</text>
+						<text>{{item.name}}</text>
 					</view>
 				</view>
 			</view>
 		</scroll-view>
 	</view>
 </template>
-
-
-
 <script>
 	export default {
 		data() {
@@ -54,14 +51,6 @@
 	.right-aside{
 		flex: 1;
 		overflow: hidden;
-	}
-	.s-item{
-		display: flex;
-		align-items: center;
-		height: 70upx;
-		padding-top: 8upx;
-		font-size: 28upx;
-		color: $font-color-dark;
 	}
 	.t-list{
 		display: flex;

@@ -1,8 +1,8 @@
 <template>
 	<view class="container">
 		<view class="detail-desc">
-			<view class="item-r"  alt=""  @click="choosed(item,index)" :key="index" v-for="(item,index) in imgList" ref='liId' style="float: left;width:178.125upx;margin-top:7.5upx;margin-left:7.5upx;"  >
-				<img :src="item.src" width='100%'>
+			<view class="item-r"  alt=""  @click="choosed(item,index)" :key="index" v-for="(item,index) in imgList" ref='liId' style="float: left;width:178.125upx;height:178.125upx;margin-top:7.5upx;margin-left:7.5upx;"  >
+				<img :src="item.src" width='100%' height="100%">
 				<view class='choose' v-if='item.isShow'></view>
 			</view>
 		</view>
@@ -75,7 +75,6 @@
 						this.checkBox.splice(idx, 1);
 					}
 				})
-				console.log(this.checkBox)
 			},
 			//图片下载
 			imgDow(){
@@ -88,11 +87,13 @@
 									uni.saveImageToPhotosAlbum({
 										filePath: res.tempFilePath,
 										success: (res) => {
-											console.log('保存成功');
+											uni.showToast({
+												title: '保存成功' ,
+												icon: 'none'
+											})
 										},
 										fail: () => console.log('保存失败')
 									 })
-									console.log('下载成功');
 								}
 							}
 						 });
@@ -116,11 +117,13 @@
 								uni.saveImageToPhotosAlbum({
 									filePath: res.tempFilePath,
 									success: (res) => {
-										console.log('保存成功');
+										uni.showToast({
+											title: '保存成功' ,
+											icon: 'none'
+										})
 									},
 									fail: () => console.log('保存失败')
 								 })
-								console.log('下载成功');
 							}
 						}
 					 });
