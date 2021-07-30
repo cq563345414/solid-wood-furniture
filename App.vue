@@ -4,7 +4,7 @@
 	 */
 	import {
 		mapMutations
-	} from 'vuex';
+	} from 'vuex'; 
 	export default {
 		methods: {
 			...mapMutations(['login'])
