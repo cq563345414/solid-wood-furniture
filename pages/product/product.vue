@@ -15,8 +15,13 @@
 		<view class="detail-desc">
 			<view class="d-header">
 				<text>图文详情</text>
+				<view class="d-choose">
+					<text>{{imgText}}</text>
+				</view>
 			</view>
-			<rich-text :nodes="desc"></rich-text>
+			<view class="d-content">
+				<img v-for="(item,index) in imgList" :src="item.src" alt="" :key="index" :width="imgWidth">
+			</view>
 		</view>
 		
 		<!-- 底部操作菜单 -->
@@ -25,7 +30,7 @@
 				<text class="yticon icon-xiatubiao--copy"></text>
 				<text>首页</text>
 			</navigator>
-			<navigator url="/pages/imgdow/imgdow" class="p-b-btn">
+			<navigator url="/pages/imgdow/imgdow" style="background-color: rgb(245 208 104);" class="p-b-btn">
 				<text class="yticon icon-gouwuche"></text>
 				<text>下载</text>
 			</navigator>
@@ -35,11 +40,7 @@
 			</view>
 		</view>
 		<!-- 分享 -->
-		<share 
-			ref="share" 
-			:contentHeight="380"
-			:shareList="shareList"
-		></share>
+		<share ref="share" :contentHeight="380" :shareList="shareList"></share>
 	</view>
 </template>
 
@@ -51,8 +52,8 @@
 		},
 		data() {
 			return {
-				specClass: 'none',
-				specSelected:[],
+				imgText:'大图',
+				imgWidth:"100%",
 				favorite: true,
 				shareList: [],
 				imgList: [
@@ -66,72 +67,7 @@
 						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg'
 					}
 				],
-				desc: `
-					<div style="width:100%">
-						<img style="width:100%;display:block;" src="https://gd3.alicdn.com/imgextra/i4/479184430/O1CN01nCpuLc1iaz4bcSN17_!!479184430.jpg_400x400.jpg" />
-						<img style="width:100%;display:block;" src="https://gd2.alicdn.com/imgextra/i2/479184430/O1CN01gwbN931iaz4TzqzmG_!!479184430.jpg_400x400.jpg" />
-						<img style="width:100%;display:block;" src="https://gd3.alicdn.com/imgextra/i3/479184430/O1CN018wVjQh1iaz4aupv1A_!!479184430.jpg_400x400.jpg" />
-						<img style="width:100%;display:block;" src="https://gd4.alicdn.com/imgextra/i4/479184430/O1CN01tWg4Us1iaz4auqelt_!!479184430.jpg_400x400.jpg" />
-						<img style="width:100%;display:block;" src="https://gd1.alicdn.com/imgextra/i1/479184430/O1CN01Tnm1rU1iaz4aVKcwP_!!479184430.jpg_400x400.jpg" />
-					</div>
-				`,
-				specList: [
-					{
-						id: 1,
-						name: '尺寸',
-					},
-					{	
-						id: 2,
-						name: '颜色',
-					},
-				],
-				specChildList: [
-					{
-						id: 1,
-						pid: 1,
-						name: 'XS',
-					},
-					{
-						id: 2,
-						pid: 1,
-						name: 'S',
-					},
-					{
-						id: 3,
-						pid: 1,
-						name: 'M',
-					},
-					{
-						id: 4,
-						pid: 1,
-						name: 'L',
-					},
-					{
-						id: 5,
-						pid: 1,
-						name: 'XL',
-					},
-					{
-						id: 6,
-						pid: 1,
-						name: 'XXL',
-					},
-					{
-						id: 7,
-						pid: 2,
-						name: '白色',
-					},
-					{
-						id: 8,
-						pid: 2,
-						name: '珊瑚粉',
-					},
-					{
-						id: 9,
-						pid: 2,
-						name: '草木绿',
-					},
-				]
+				
 			};
 		},
 		async onLoad(options){
@@ -141,30 +77,25 @@
 			if(id){
 				// this.$api.msg(`点击了${id}`);
 			}
-			//规格 默认选中第一条
-			this.specList.forEach(item=>{
-				for(let cItem of this.specChildList){
-					if(cItem.pid === item.id){
-						this.$set(cItem, 'selected', true);
-						this.specSelected.push(cItem);
-						break; //forEach不能使用break
-					}
+			await this.$axios.get('/good_datail',{
+				params:{
+				'aid':id,
 				}
+			}).then((res)=>{
+				if(res.code == 0){
+					this.goodsList = res.data.data;
+				}else{
+					uni.showToast({
+						title: res.data,
+						icon: 'none'
+					})
+				}
+			}).catch((res)=>{
+				console.log(res);
 			})
 			this.shareList = await this.$api.json('shareList');
 		},
 		methods:{
-			//规格弹窗开关
-			toggleSpec() {
-				if(this.specClass === 'show'){
-					this.specClass = 'hide';
-					setTimeout(() => {
-						this.specClass = 'none';
-					}, 250);
-				}else if(this.specClass === 'none'){
-					this.specClass = 'show';
-				}
-			},
 			//分享
 			share(){
 				this.$refs.share.toggleMask();	
@@ -202,54 +133,6 @@
 			image {
 				width: 100%;
 				height: 100%;
-			}
-		}
-	}
-	/* 标题简介 */
-	.introduce-section{
-		background: #fff;
-		padding: 20upx 30upx;
-		
-		.title{
-			font-size: 32upx;
-			color: $font-color-dark;
-			height: 50upx;
-			line-height: 50upx;
-		}
-		.price-box{
-			display:flex;
-			align-items:baseline;
-			height: 64upx;
-			padding: 10upx 0;
-			font-size: 26upx;
-			color:$uni-color-primary;
-		}
-		.price{
-			font-size: $font-lg + 2upx;
-		}
-		.m-price{
-			margin:0 12upx;
-			color: $font-color-light;
-			text-decoration: line-through;
-		}
-		.coupon-tip{
-			align-items: center;
-			padding: 4upx 10upx;
-			background: $uni-color-primary;
-			font-size: $font-sm;
-			color: #fff;
-			border-radius: 6upx;
-			line-height: 1;
-			transform: translateY(-4upx); 
-		}
-		.bot-row{
-			display:flex;
-			align-items:center;
-			height: 50upx;
-			font-size: $font-sm;
-			color: $font-color-light;
-			text{
-				flex: 1;
 			}
 		}
 	}
@@ -354,62 +237,6 @@
 			color: $uni-color-primary;
 		}
 	}
-	/* 评价 */
-	.eva-section{
-		display: flex;
-		flex-direction: column;
-		padding: 20upx 30upx;
-		background: #fff;
-		margin-top: 16upx;
-		.e-header{
-			display: flex;
-			align-items: center;
-			height: 70upx;
-			font-size: $font-sm + 2upx;
-			color: $font-color-light;
-			.tit{
-				font-size: $font-base + 2upx;
-				color: $font-color-dark;
-				margin-right: 4upx;
-			}
-			.tip{
-				flex: 1;
-				text-align: right;
-			}
-			.icon-you{
-				margin-left: 10upx;
-			}
-		}
-	}
-	.eva-box{
-		display: flex;
-		padding: 20upx 0;
-		.portrait{
-			flex-shrink: 0;
-			width: 80upx;
-			height: 80upx;
-			border-radius: 100px;
-		}
-		.right{
-			flex: 1;
-			display: flex;
-			flex-direction: column;
-			font-size: $font-base;
-			color: $font-color-base;
-			padding-left: 26upx;
-			.con{
-				font-size: $font-base;
-				color: $font-color-dark;
-				padding: 20upx 0;
-			}
-			.bot{
-				display: flex;
-				justify-content: space-between;
-				font-size: $font-sm;
-				color:$font-color-light;
-			}
-		}
-	}
 	/*  详情 */
 	.detail-desc{
 		background: #fff;
@@ -441,69 +268,6 @@
 			}
 		}
 	}
-	
-	/* 规格选择弹窗 */
-	.attr-content{
-		padding: 10upx 30upx;
-		.a-t{
-			display: flex;
-			image{
-				width: 170upx;
-				height: 170upx;
-				flex-shrink: 0;
-				margin-top: -40upx;
-				border-radius: 8upx;;
-			}
-			.right{
-				display: flex;
-				flex-direction: column;
-				padding-left: 24upx;
-				font-size: $font-sm + 2upx;
-				color: $font-color-base;
-				line-height: 42upx;
-				.price{
-					font-size: $font-lg;
-					color: $uni-color-primary;
-					margin-bottom: 10upx;
-				}
-				.selected-text{
-					margin-right: 10upx;
-				}
-			}
-		}
-		.attr-list{
-			display: flex;
-			flex-direction: column;
-			font-size: $font-base + 2upx;
-			color: $font-color-base;
-			padding-top: 30upx;
-			padding-left: 10upx;
-		}
-		.item-list{
-			padding: 20upx 0 0;
-			display: flex;
-			flex-wrap: wrap;
-			text{
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				background: #eee;
-				margin-right: 20upx;
-				margin-bottom: 20upx;
-				border-radius: 100upx;
-				min-width: 60upx;
-				height: 60upx;
-				padding: 0 20upx;
-				font-size: $font-base;
-				color: $font-color-dark;
-			}
-			.selected{
-				background: #fbebee;
-				color: $uni-color-primary;
-			}
-		}
-	}
-	
 	/*  弹出层 */
 	.popup {
 		position: fixed;

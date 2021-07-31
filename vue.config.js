@@ -17,7 +17,7 @@ module.exports = {
             warnings: false,
             errors: true
         },
-        proxy: {
+        proxyTable: {
             '/API': {
                 target: `https://hm.zhugokeji.com/index.php/api/api`,
                 secure: false,

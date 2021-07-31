@@ -5,119 +5,163 @@
 		</uni-search-bar>
 		<!-- 头部轮播 -->
 		<view class="carousel-section">
-			<swiper class="carousel" circular @change="swiperChange">
+			<swiper class="carousel" circular >
 				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navToDetailPage({title: '轮播广告'})">
-					<image :src="item.src" />
+					<image :src="item.url" />
 				</swiper-item>
 			</swiper>
 		</view>
 		<!-- 分类 -->
 		<view class="cate-section">
 			<view class="cate-item" @click="navToList(item.id)" v-for="(item,index) in indexCateList" :key="index">
-				<image :src="item.picture"></image>
-				<text>{{item.name}}</text>
+				<image :src="item.url"></image>
+				<text>{{item.typename}}</text>
 			</view>
 		</view>
-		<view class="guess-section">
-			<view 
-				v-for="(item, index) in goodsList" :key="index"
-				class="guess-item"
-				@click="navToDetailPage(item)"
-			>
-				<view class="image-wrapper">
-					<image :src="item.image" mode="aspectFill"></image>
-				</view>
-				<text class="title clamp">{{item.title}}</text>
-				<view class="price-box">
-					<text>{{item.sales}}张图片</text>
+		<view class="content">
+			<view class="guess-section">
+				<view 
+					v-for="(item, index) in indexGoodsList" :key="index"
+					class="guess-item"
+					@click="navToDetailPage(item.aid)"
+				>
+					<view class="image-wrapper">
+						<image :src="item.url" mode="aspectFill"></image>
+					</view>
+					<text class="title clamp">{{item.title}}</text>
+					<view class="price-box">
+						<text>{{item.count}}张图片</text>
+					</view>
 				</view>
 			</view>
+			<uni-load-more :status="loadingType"></uni-load-more>
 		</view>
 	</view>
 </template>
 
 <script>
-
+	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
+	const indexGoodsList = []
 	export default {
-
+		components: {
+			uniLoadMore	
+		},
 		data() {
 			return {
-				titleNViewBackground: '',
-				swiperCurrent: 0,
-				swiperLength: 0,
+				headerPosition:"fixed",
+				headerTop:"0px",
+				loadingType: 'more', //加载更多状态
+				filterIndex: 0, 
 				carouselList: [],
-				goodsList: [],
+				indexGoodsList: [],
 				indexCateList:[],
 				searchValue:'',
+				total:0
 			};
 		},
-
-		onLoad() {
+		onLoad(options){
+			// #ifdef H5
+			this.headerTop = document.getElementsByTagName('uni-page-head')[0].offsetHeight+'px';
+			// #endif
+			this.loadIndexData();
 			this.loadData();
 		},
+		onPageScroll(e){
+			//兼容iOS端下拉时顶部漂移
+			if(e.scrollTop>=0){
+				this.headerPosition = "fixed";
+			}else{
+				this.headerPosition = "absolute";
+			}
+		},
+		//下拉刷新
+		onPullDownRefresh(){
+			this.loadData('refresh');
+		},
+		//加载更多
+		onReachBottom(){
+			this.loadData('more');
+		},
 		methods: {
-			/**
-			 * 请求静态数据只是为了代码不那么乱
-			 * 分次请求未作整合
-			 */
-			async loadData() {
-				let res = await this.$axios.get('/API/index_banner', {
-					params: {
-						pageNo: 1,
-						pageSize: 99,
-						type: 6
-					},
-					transformRequest:[
-                        function(data){
-                        },
-                    ],
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-                    },
-                    dataType:"json",
-                })
-                .then((res) => {
-                    console.log("连接成功");//这里打印出来是为了更直观的看到连接成功了
-                    console.log(res); //res是后端返回来的数据，如果连接成功，则把res打印出来
-                })
-                .catch(function(error){
-                    console.log("连接失败");
-                    console.log(error); //如果连接失败，则抛出错误的信息
-                });
-				// this.researchList = res.data.retData.list
-				let carouselList = await this.$api.json('carouselList');
-				this.titleNViewBackground = carouselList[0].background;
-				this.swiperLength = carouselList.length;
-				this.carouselList = carouselList;
-				let indexCateList = await this.$api.json('indexCateList');
-				this.indexCateList = indexCateList || [];
-				let goodsList = await this.$api.json('goodsList');
-				this.goodsList = goodsList || [];
+			async loadIndexData(){
+				//轮播图
+				await this.$axios.get('/index_banner')
+				.then((res)=>{
+					this.carouselList=res.data.data;
+				}).catch((res)=>{
+					console.log(res);
+				}),
+				//分类
+				await this.$axios.get('/index_type')
+				.then((res)=>{
+					this.indexCateList=res.data.data;
+				}).catch((res)=>{
+					console.log(res);
+				})
 			},
-			//轮播图切换修改背景色
-			swiperChange(e) {
-				const index = e.detail.current;
-				this.swiperCurrent = index;
-				this.titleNViewBackground = this.carouselList[index].background;
+			//加载商品 ，带下拉刷新和上滑加载
+			async loadData(type='add', loading) {
+				//产品
+				await this.$axios.get('/index_good')
+				.then((res)=>{
+					if(res.data.code == 0){
+						this.indexGoodsList=res.data.data.data;
+						this.total = res.data.data.total
+					}else{
+						uni.showToast({
+							title: res.data,
+							icon: 'none'
+						})
+					}
+				}).catch((res)=>{
+				})
+				//没有更多直接返回
+				if(type === 'add'){
+					if(this.loadingType === 'nomore'){
+						return;
+					}
+					this.loadingType = 'loading';
+				}else{
+					this.loadingType = 'more'
+				}
+				//筛选，测试数据直接前端筛选了
+				if(this.filterIndex === 1){
+					indexGoodsList.sort((a,b)=>b.sales - a.sales)
+				}
+				if(this.filterIndex === 2){
+					indexGoodsList.sort((a,b)=>{
+						if(this.priceOrder == 1){
+							return a.price - b.price;
+						}
+						return b.price - a.price;
+					})
+				}
+				this.indexGoodsList = this.indexGoodsList.concat(indexGoodsList);
+				//判断是否还有下一页，有是more  没有是nomore(测试数据判断大于20就没有了)
+				this.loadingType  = this.indexGoodsList.length >= this.total ? 'nomore' : 'more';
+				if(type === 'refresh'){
+					if(loading == 1){
+						uni.hideLoading()
+					}else{
+						uni.stopPullDownRefresh();
+					}
+				}
 			},
 			//详情页
-			navToDetailPage(item) {
-				//测试数据没有写id，用title代替
-				let id = item.title;
+			navToDetailPage(id) {
 				uni.navigateTo({
 					url: `/pages/product/product?id=${id}`
 				})
 			},
-			navToList(fid){
+			navToList(id){
 				uni.navigateTo({
-					url: `/pages/product/list?fid=${fid}`
+					url: `/pages/product/list?id=${id}`
 				})
 			},
-			// 标题栏input搜索框点击
+			// 搜索
 			search(res) {
-				uni.showToast({
-					title: '搜索：' + res.value,
-					icon: 'none'
+				uni.navigateTo({
+					url: `/pages/searchList/searchList?keywodr=${res.value}`
 				})
 			},
 			input(res) {
@@ -130,7 +174,6 @@
 			},
 			cancel(res) {
 			}
-			
 		},
 	}
 </script>

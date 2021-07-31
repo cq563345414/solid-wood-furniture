@@ -39,8 +39,9 @@ const prePage = ()=>{
 	return prePage.$vm;
 }
 
-
-Vue.config.productionTip = false
+//  常规配置项
+axios.defaults.baseURL = 'https://hm.zhugokeji.com/index.php/api/api'; //  请求服务器具体的地址
+Vue.config.productionTip = false;
 Vue.prototype.$fire = new Vue();
 Vue.prototype.$store = store;
 Vue.prototype.$api = {msg, json, prePage};
