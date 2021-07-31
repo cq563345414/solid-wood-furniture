@@ -4,7 +4,7 @@
 			<view class="s-list">
 				<view class="t-list">
 					<view @click="navToList(item.id)" class="t-item" v-for="item in cateList">
-						<text>{{item.name}}</text>
+						<text>{{item.typename}}</text>
 					</view>
 				</view>
 			</view>
@@ -26,12 +26,17 @@
 		},
 		methods: {
 			async loadData(){
-				let cateList = await this.$api.json('cateList');
-				this.cateList = cateList || [];
+				//所有分类
+				await this.$axios.get('/type')
+				.then((response)=>{
+					this.cateList=response.data.data;
+				}).catch((response)=>{
+					console.log(response);
+				})
 			},
-			navToList(sid){
+			navToList(id){
 				uni.navigateTo({
-					url: `/pages/product/list?sid=${sid}`
+					url: `/pages/product/list?id=${id}`
 				})
 			}
 		}
@@ -42,7 +47,6 @@
 	page,
 	.content {
 		height: 100%;
-		background-color: #f8f8f8;
 	}
 
 	.content {
