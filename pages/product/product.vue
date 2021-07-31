@@ -70,30 +70,21 @@
 				
 			};
 		},
-		async onLoad(options){
-			
+		onLoad(options){
 			//接收传值,id里面放的是标题，因为测试数据并没写id 
 			let id = options.id;
-			if(id){
-				// this.$api.msg(`点击了${id}`);
-			}
-			await this.$axios.get('/good_datail',{
-				params:{
-				'aid':id,
+			uni.request({
+				url: "https://hm.zhugokeji.com/index.php/api/api/good_datail",                  
+				method: 'get',
+				data: {
+					'aid':id,
+				},
+				dataType: 'json',
+				success: res => {
+					this.goodsList=res.data.data.data;
 				}
-			}).then((res)=>{
-				if(res.code == 0){
-					this.goodsList = res.data.data;
-				}else{
-					uni.showToast({
-						title: res.data,
-						icon: 'none'
-					})
-				}
-			}).catch((res)=>{
-				console.log(res);
 			})
-			this.shareList = await this.$api.json('shareList');
+			this.shareList = this.$api.json('shareList');
 		},
 		methods:{
 			//分享

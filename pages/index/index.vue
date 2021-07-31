@@ -6,7 +6,7 @@
 		<!-- 头部轮播 -->
 		<view class="carousel-section">
 			<swiper class="carousel" circular >
-				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item" @click="navToDetailPage({title: '轮播广告'})">
+				<swiper-item v-for="(item, index) in carouselList" :key="index" class="carousel-item">
 					<image :src="item.url" />
 				</swiper-item>
 			</swiper>
@@ -34,8 +34,11 @@
 					</view>
 				</view>
 			</view>
-			<uni-load-more :status="loadingType"></uni-load-more>
 		</view>
+		<view v-show="isLoadMore" style="width: 100%;display: flex;justify-content: center;">
+				<!-- loading加载提示处 -->
+				<uni-load-more :status="loadStatus"></uni-load-more>
+			</view>
 	</view>
 </template>
 
@@ -48,13 +51,15 @@
 		},
 		data() {
 			return {
-				headerPosition:"fixed",
-				headerTop:"0px",
-				loadingType: 'more', //加载更多状态
-				filterIndex: 0, 
+				params: {
+					page: 1,
+					limit: 10,
+				},
+				loadStatus: 'loading', //加载样式：more-加载前样式，loading-加载中样式，nomore-没有数据样式
+				isLoadMore: false, //是否加载中
 				carouselList: [],
-				indexGoodsList: [],
 				indexCateList:[],
+				indexGoodsList: [],
 				searchValue:'',
 				total:0
 			};
@@ -63,7 +68,6 @@
 			// #ifdef H5
 			this.headerTop = document.getElementsByTagName('uni-page-head')[0].offsetHeight+'px';
 			// #endif
-			this.loadIndexData();
 			this.loadData();
 		},
 		onPageScroll(e){
@@ -74,78 +78,69 @@
 				this.headerPosition = "absolute";
 			}
 		},
-		//下拉刷新
-		onPullDownRefresh(){
-			this.loadData('refresh');
+		onPullDownRefresh() {
+			// 清空数据
+			this.carouselList = [];
+			this.indexCateList = [];
+			this.indexGoodsList = [];
+			// 开始获取数据
+			this.loadData()
+			setTimeout(function() {
+				uni.stopPullDownRefresh(); //停止下拉刷新动画
+			}, 1000);
 		},
-		//加载更多
-		onReachBottom(){
-			this.loadData('more');
+		onReachBottom() {
+			if (!this.isLoadMore) { //此处判断，上锁，防止重复请求
+				this.isLoadMore = true
+				this.params.page += 1     //上拉加载后端给的是要求分页去做，每页十个，所以上拉的时候page+1即可
+				this.loadData()
+			}
 		},
 		methods: {
-			async loadIndexData(){
-				//轮播图
-				await this.$axios.get('/index_banner')
-				.then((res)=>{
-					this.carouselList=res.data.data;
-				}).catch((res)=>{
-					console.log(res);
-				}),
-				//分类
-				await this.$axios.get('/index_type')
-				.then((res)=>{
-					this.indexCateList=res.data.data;
-				}).catch((res)=>{
-					console.log(res);
-				})
-			},
 			//加载商品 ，带下拉刷新和上滑加载
-			async loadData(type='add', loading) {
-				//产品
-				await this.$axios.get('/index_good')
-				.then((res)=>{
-					if(res.data.code == 0){
-						this.indexGoodsList=res.data.data.data;
-						this.total = res.data.data.total
-					}else{
-						uni.showToast({
-							title: res.data,
-							icon: 'none'
-						})
+			loadData(){  
+				//轮播图
+				uni.request({
+                    url: "https://hm.zhugokeji.com/index.php/api/api/index_banner",                  
+                    method: 'get',
+                    dataType: 'json',
+					success: res => {
+						this.carouselList= res.data.data;
 					}
-				}).catch((res)=>{
 				})
-				//没有更多直接返回
-				if(type === 'add'){
-					if(this.loadingType === 'nomore'){
-						return;
+				//分类
+				uni.request({
+                    url: "https://hm.zhugokeji.com/index.php/api/api/index_type",                  
+                    method: 'get',
+                    dataType: 'json',
+					success: res => {
+						console.log(res.data.data)
+						this.indexCateList=res.data.data;
 					}
-					this.loadingType = 'loading';
-				}else{
-					this.loadingType = 'more'
-				}
-				//筛选，测试数据直接前端筛选了
-				if(this.filterIndex === 1){
-					indexGoodsList.sort((a,b)=>b.sales - a.sales)
-				}
-				if(this.filterIndex === 2){
-					indexGoodsList.sort((a,b)=>{
-						if(this.priceOrder == 1){
-							return a.price - b.price;
+				}) 
+				uni.request({
+					url:'https://hm.zhugokeji.com/index.php/api/api/index_good',
+					data:this.params,
+					dataType: 'json',
+					success:res => {
+						if (res.statusCode < 400) {
+							if(res.data.code == 0){
+								this.indexGoodsList = this.indexGoodsList.concat(res.data.data.data)  //这个是用来数据连接的
+								if (res.data.data.data.length < this.params.limit) { //判断接口返回数据量小于请求数据量，则表示此为最后一页
+									this.isLoadMore = true
+									this.loadStatus = 'nomore'
+								} else {
+									this.isLoadMore = false
+								}
+							}else{
+								this.isLoadMore = true
+								this.loadStatus = 'nomore'
+							}
+						} else {
+							this.$api.msg(res.data.message)
 						}
-						return b.price - a.price;
-					})
-				}
-				this.indexGoodsList = this.indexGoodsList.concat(indexGoodsList);
-				//判断是否还有下一页，有是more  没有是nomore(测试数据判断大于20就没有了)
-				this.loadingType  = this.indexGoodsList.length >= this.total ? 'nomore' : 'more';
-				if(type === 'refresh'){
-					if(loading == 1){
-						uni.hideLoading()
-					}else{
-						uni.stopPullDownRefresh();
 					}
-				}
+				})
 			},
 			//详情页
 			navToDetailPage(id) {
@@ -160,9 +155,12 @@
 			},
 			// 搜索
 			search(res) {
-				uni.navigateTo({
-					url: `/pages/searchList/searchList?keywodr=${res.value}`
-				})
+				if(res != ''){
+					uni.navigateTo({
+						url: `/pages/searchList/searchList?keyword=${res.value}`
+					})
+				}
+				
 			},
 			input(res) {
 			},

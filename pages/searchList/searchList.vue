@@ -2,7 +2,7 @@
 	<view class="content">
 		<view class="goods-list">
 			<view 
-				v-for="(item, index) in goodsList" :key="index"
+				v-for="(item, index) in SearchGoodsList" :key="index"
 				class="goods-item"
 				@click="navToDetailPage(item.aid)"
 			>
@@ -24,18 +24,18 @@
 
 <script>
 	import uniLoadMore from '@/components/uni-load-more/uni-load-more.vue';
-	const goodsList = []
+	const SearchGoodsList = []
 	export default {
 		components: {
 			uniLoadMore	
 		},
 		data() {
 			return {
-				goodsList: [],
+				SearchGoodsList: [],
 				params: {
 					page: 1,
 					limit: 10,
-					typeid:'',
+					keyword:'',
 				},
 				loadStatus: 'loading', //加载样式：more-加载前样式，loading-加载中样式，nomore-没有数据样式
 				isLoadMore: false, //是否加载中
@@ -50,12 +50,12 @@
 			}
 		},
 		onLoad(options){
-			this.params.typeid = options.id;
+			this.params.keyword = options.keyword;
 			this.detailList()
 		},
 		onPullDownRefresh() {
 			// 清空数据
-			this.goodsList = []
+			this.SearchGoodsList = []
 			// 开始获取数据
 			this.detailList()
 			setTimeout(function() {
@@ -73,13 +73,13 @@
 			//加载商品 ，带下拉刷新和上滑加载
 			detailList(){   
 				uni.request({
-					url:'https://hm.zhugokeji.com/index.php/api/api/type_good',
+					url:'https://hm.zhugokeji.com/index.php/api/api/query_good',
 					data:this.params,
 					dataType: 'json',
 					success:res => {
 						if (res.statusCode < 400) {
 							if(res.data.code == 0){
-								this.goodsList = this.goodsList.concat(res.data.data)  //这个是用来数据连接的
+								this.SearchGoodsList = this.SearchGoodsList.concat(res.data.data)  //这个是用来数据连接的
 								if (res.data.data.length < this.params.limit) { //判断接口返回数据量小于请求数据量，则表示此为最后一页
 									this.isLoadMore = true
 									this.loadStatus = 'nomore'

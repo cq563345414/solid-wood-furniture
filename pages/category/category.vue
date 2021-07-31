@@ -25,13 +25,15 @@
 			this.loadData();
 		},
 		methods: {
-			async loadData(){
+			loadData(){
 				//所有分类
-				await this.$axios.get('/type')
-				.then((response)=>{
-					this.cateList=response.data.data;
-				}).catch((response)=>{
-					console.log(response);
+				uni.request({
+					url: "https://hm.zhugokeji.com/index.php/api/api/type",                  
+					method: 'get',
+					dataType: 'json',
+					success: res => {
+						this.cateList=res.data.data;
+					}
 				})
 			},
 			navToList(id){
