@@ -3,44 +3,41 @@
 		
 		<view class="c-list">
 			<view class="c-row b-b">
-				<text class="tit">促销活动</text>
 				<view class="con-list">
-					<text>新人首单送20元无门槛代金券</text>
-					<text>订单满50减10</text>
-					<text>订单满100减30</text>
-					<text>单笔购买满两件免邮费</text>
+					<text class="title">{{title}}</text>
+					<text>{{description}}</text>
 				</view>
 			</view>
 		</view>
 		<view class="detail-desc">
 			<view class="d-header">
-				<text>图文详情</text>
-				<view class="d-choose">
+				<text>详情图</text>
+				<view class="d-choose" @click="switchImgWidth()">
 					<text>{{imgText}}</text>
 				</view>
 			</view>
 			<view class="d-content">
-				<img v-for="(item,index) in imgList" :src="item.src" alt="" :key="index" :width="imgWidth">
+				<img v-for="(item,index) in imgList" @click="previewImage(index)" :style="{float:'left',width:imgWidth+'%',}" mode="widthFix" :src="item.src" alt="" :key="index" >
 			</view>
 		</view>
 		
 		<!-- 底部操作菜单 -->
 		<view class="page-bottom">
-			<navigator url="/pages/index/index" open-type="switchTab" class="p-b-btn">
+			<navigator url="/pages/index/index/" open-type="switchTab" class="p-b-btn">
 				<text class="yticon icon-xiatubiao--copy"></text>
 				<text>首页</text>
 			</navigator>
-			<navigator url="/pages/imgdow/imgdow" style="background-color: rgb(245 208 104);" class="p-b-btn">
+			<view style="background-color: rgb(245 208 104);color:#fff;" @click="toImgDow()" class="p-b-btn">
 				<text class="yticon icon-gouwuche"></text>
 				<text>下载</text>
-			</navigator>
-			<view class="p-b-btn" style="background-color: #DD524D;" @click="share">
+			</view>
+			<view class="p-b-btn" style="background-color: #DD524D; color:#fff;" @click="share">
 				<text class="yticon icon-shoucang"></text>
 				<text>分享</text>
 			</view>
 		</view>
 		<!-- 分享 -->
-		<share ref="share" :contentHeight="380" :shareList="shareList"></share>
+		<share ref="share" :contentHeight="170" :shareList="shareList"></share>
 	</view>
 </template>
 
@@ -52,10 +49,12 @@
 		},
 		data() {
 			return {
-				imgText:'大图',
-				imgWidth:"100%",
 				favorite: true,
 				shareList: [],
+				title:'标题',
+				description: "内容",
+				imgText:'大图',
+				imgWidth:100,
 				imgList: [
 					{
 						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg'
@@ -67,32 +66,69 @@
 						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg'
 					}
 				],
-				
+				did:-1,
 			};
 		},
-		onLoad(options){
+		async onLoad(options){
 			//接收传值,id里面放的是标题，因为测试数据并没写id 
-			let id = options.id;
-			uni.request({
-				url: "https://hm.zhugokeji.com/index.php/api/api/good_datail",                  
-				method: 'get',
-				data: {
-					'aid':id,
-				},
-				dataType: 'json',
-				success: res => {
-					this.goodsList=res.data.data.data;
-				}
-			})
-			this.shareList = this.$api.json('shareList');
+			this.did = options.id;
+			// uni.request({
+			// 	url: "https://hm.zhugokeji.com/index.php/api/api/good_datail",                  
+			// 	method: 'get',
+			// 	data: {
+			// 		'aid':this.did,
+			// 	},
+			// 	dataType: 'json',
+			// 	success: res => {
+			// 		this.title=res.data.data.title;
+			// 		this.description=res.data.data.seo_description;
+			// 		this.imgList=res.data.data.img;
+			// 	}
+			// });
+			// this.shareList = await this.$api.json('shareList')
 		},
 		methods:{
+			toImgDow(){
+				uni.navigateTo({
+					url: `/pages/imgdow/imgdow?id=${this.did}`
+				})
+			},
+			//图片大小切换
+			switchImgWidth(){
+				if(this.imgWidth == 100){
+					this.imgWidth = 50;
+					this.imgText = '中图';
+				}else if(this.imgWidth == 50){
+					this.imgWidth = 25;
+					this.imgText = '小图';
+				}else{
+					this.imgWidth = 100;
+					this.imgText = '大图';
+				}
+			},
+			// 预览图片
+			previewImage(index) {
+				let photoList = this.imgList.map(item => {
+					return item.src;
+				});
+				uni.previewImage({
+					current: index,     // 当前显示图片的链接/索引值
+					urls: photoList,    // 需要预览的图片链接列表，photoList要求必须是数组
+					loop:true   // 是否可循环预览
+				});
+			},
 			//分享
 			share(){
 				this.$refs.share.toggleMask();	
 			},
 			stopPrevent(){}
 		},
+		onShareAppMessage(res) {
+		    return {
+		      title: '实木家具',
+		      path: '/pages/index/index'
+		    }
+		}
 	}
 </script>
 
@@ -192,6 +228,12 @@
 		font-size: $font-sm + 2upx;
 		color: $font-color-base;
 		background: #fff;
+		.title{
+			font-size: 32upx;
+			color: $font-color-dark;
+			height: 50upx;
+			line-height: 50upx;
+		}
 		.c-row{
 			display:flex;
 			align-items:center;
@@ -240,7 +282,6 @@
 			font-size: $font-base + 2upx;
 			color: $font-color-dark;
 			position: relative;
-				
 			text{
 				padding: 0 20upx;
 				background: #fff;
@@ -256,6 +297,12 @@
 				height: 0;
 				content: '';
 				border-bottom: 1px solid #ccc; 
+			}
+			.d-choose{
+				position: absolute;
+				right: 0%;
+				font-size: $font-base;
+				color:#888;
 			}
 		}
 	}

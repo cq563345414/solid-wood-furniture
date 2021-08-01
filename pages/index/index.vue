@@ -114,7 +114,6 @@
                     method: 'get',
                     dataType: 'json',
 					success: res => {
-						console.log(res.data.data)
 						this.indexCateList=res.data.data;
 					}
 				}) 

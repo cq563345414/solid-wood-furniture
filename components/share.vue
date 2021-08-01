@@ -11,18 +11,16 @@
 			}]"
 		>
 			<scroll-view class="view-content" scroll-y>
-				<view class="share-header">
-					分享到
-				</view>
+				<!-- <view class="share-header">分享到</view> -->
 				<view class="share-list">
-					<view 
+					<button class="share-button" data-name="shareBtn" open-type="share">分享给好友</button>
+					<!-- <view 
 						v-for="(item, index) in shareList" :key="index"
 						class="share-item" 
 						@click="shareToFriend(item.text)"
 					>
-						<image :src="item.icon" mode=""></image>
 						<text>{{item.text}}</text>
-					</view>
+					</view> -->
 				</view>
 			</scroll-view>
 			<view class="bottom b-t" @click="toggleMask">取消</view>
@@ -87,7 +85,6 @@
 					}, 200)
 					return;
 				}
-				
 				this.show = true;
 				//等待mask重绘完成执行
 				if(this.hasTabbar){
@@ -113,7 +110,7 @@
 				this.$api.msg(`分享给${type}`);
 				this.toggleMask();
 			},
-		}
+		},
 	}
 </script>
 
@@ -181,6 +178,14 @@
 	.share-list{
 		display:flex;
 		flex-wrap: wrap;
+		.share-button{
+			outline:0 none !important;
+			font-size: $font-base;
+			color: $font-color-base;
+			width:100%;
+			text-align: center;
+			border:none;
+		}
 	}
 	.share-item{
 		min-width: 33.33%;

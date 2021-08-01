@@ -2,7 +2,7 @@
 	<view class="container">
 		<view class="detail-desc">
 			<view class="item-r"  alt=""  @click="choosed(item,index)" :key="index" v-for="(item,index) in imgList" ref='liId' style="float: left;width:178.125upx;height:178.125upx;margin-top:7.5upx;margin-left:7.5upx;"  >
-				<img :src="item.src" width='100%' height="100%">
+				<img :src="item.url" style="width:100%;"   mode="widthFix">
 				<view class='choose' v-if='item.isShow'></view>
 			</view>
 		</view>
@@ -23,6 +23,7 @@
 		},
 		data() {
 			return {
+				description: "内容",
 				checkBox: [],    // 选中的内容
 				imgList: [
 					{
@@ -58,10 +59,38 @@
 				],
 			};
 		},
-		async onLoad(options){
+		onLoad(options){
+			this.did = options.id;
+		},
+		beforeMount(){
+			this.mountDealCount()
 		},
 		methods:{
 			// 多选
+			getOutInfo(){ 
+				return new Promise((resolve, reject) => {
+					uni.request({ 
+						url : `https://hm.zhugokeji.com/index.php/api/api/index_banner`,
+						method : "GET",
+						data : {},
+						success: (res) => {
+							let list = res.data.data;
+							let imgList = list.map(item=>{
+								item.isShow = false;
+								return item;
+							});
+							this.imgList = imgList;
+							resolve('suc');  // 千万别忘写！！！
+						},
+						fail:(err)=>{
+							reject('err')
+						}
+					})
+				})
+			},
+			async mountDealCount(){
+				await this.getOutInfo()
+			},
 			choosed(item,index) {
 				var idx = this.checkBox.indexOf(index);
 				this.$nextTick(function(){
@@ -78,33 +107,30 @@
 			},
 			//图片下载
 			imgDow(){
-				this.$nextTick(function(){
-					this.checkBox.forEach(function(e) {
-						uni.downloadFile({
-							url: e.src,
-							success: (res) => {
-								if (res.statusCode === 200) {
-									uni.saveImageToPhotosAlbum({
-										filePath: res.tempFilePath,
-										success: (res) => {
-											uni.showToast({
-												title: '保存成功' ,
-												icon: 'none'
-											})
-										},
-										fail: () => console.log('保存失败')
-									 })
-								}
+				this.checkBox.forEach(function(e) {
+					uni.downloadFile({
+						url: e.url,
+						success: (res) => {
+							if (res.statusCode === 200) {
+								uni.saveImageToPhotosAlbum({
+									filePath: res.tempFilePath,
+									success: (res) => {
+										uni.showToast({
+											title: '保存成功' ,
+											icon: 'none'
+										})
+									},
+									fail: () => console.log('保存失败')
+									})
 							}
-						 });
-					})
+						}
+						});
 				})
-				
 			},
 			//图片下载并复制文本
 			downAll(){
 				uni.setClipboardData({
-				    data: 'hello',
+				    data: this.description,
 				    success: function () {
 				        console.log('success');
 				    }
