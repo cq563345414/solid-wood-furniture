@@ -137,7 +137,7 @@
 				});
 				this.checkBox.forEach(function(e) {
 					uni.downloadFile({
-						url: e.src,
+						url: e.url,
 						success: (res) => {
 							if (res.statusCode === 200) {
 								uni.saveImageToPhotosAlbum({
