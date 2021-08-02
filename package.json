@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://gitee.com/cq18250703562/solid-wood-furniture.git"
   },
-  "author": "",
+  "author": "CQ",
   "license": "ISC",
   "dependencies": {
     "qs": "^6.10.1",
