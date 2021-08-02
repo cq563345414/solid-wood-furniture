@@ -13,11 +13,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
     "qs": "^6.10.1",
     "vue-axios": "^3.2.5"
   },
   "devDependencies": {
-    "@types/qs": "^6.9.7"
+    "@types/qs": "^6.9.7",
+    "axios": "^0.21.1",
+    "vue-axios": "^3.2.5"
   }
 }

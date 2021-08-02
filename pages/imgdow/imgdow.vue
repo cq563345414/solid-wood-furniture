@@ -25,38 +25,8 @@
 			return {
 				description: "内容",
 				checkBox: [],    // 选中的内容
-				imgList: [
-					{
-						id:1,
-						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg',
-						isShow:false,
-					},
-					{
-						id:2,
-						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg',
-						isShow:false,
-					},
-					{
-						id:3,
-						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg',
-						isShow:false,
-					},
-					{
-						id:4,
-						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg',
-						isShow:false,
-					},
-					{
-						id:5,
-						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg',
-						isShow:false,
-					},
-					{
-						id:6,
-						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg',
-						isShow:false,
-					}
-				],
+				imgList: [],
+				did:-1,
 			};
 		},
 		onLoad(options){
@@ -70,9 +40,11 @@
 			getOutInfo(){ 
 				return new Promise((resolve, reject) => {
 					uni.request({ 
-						url : `https://hm.zhugokeji.com/index.php/api/api/index_banner`,
+						url : `https://hm.zhugokeji.com/index.php/api/api/good_datail`,
 						method : "GET",
-						data : {},
+						data: {
+							'aid':this.did,
+						},
 						success: (res) => {
 							let list = res.data.data;
 							let imgList = list.map(item=>{

@@ -74,6 +74,7 @@
 			detailList(){   
 				uni.request({
 					url:'https://hm.zhugokeji.com/index.php/api/api/query_good',
+					method:'post',
 					data:this.params,
 					dataType: 'json',
 					success:res => {
@@ -97,11 +98,9 @@
 				})
 			},
 			//详情
-			navToDetailPage(item){
-				//测试数据没有写id，用title代替
-				let id = item.id;
+			navToDetailPage(aid){
 				uni.navigateTo({
-					url: `/pages/product/product?id=${id}`
+					url: `/pages/product/product?id=${aid}`
 				})
 			},
 			stopPrevent(){}

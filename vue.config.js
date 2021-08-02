@@ -17,15 +17,15 @@ module.exports = {
             warnings: false,
             errors: true
         },
-        proxyTable: {
-            '/API': {
-                target: `https://hm.zhugokeji.com/index.php/api/api`,
-                secure: false,
-                changeOrigin: true,
-                pathRewrite: {
-                '^/API': '/'
-                },
-            },
-        }
+        // proxyTable: {
+        //     '/API': {
+        //         target: `https://hm.zhugokeji.com/index.php/api/api`,
+        //         secure: false,
+        //         changeOrigin: true,
+        //         pathRewrite: {
+        //         '^/API': '/'
+        //         },
+        //     },
+        // }
     }
 }

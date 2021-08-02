@@ -17,22 +17,22 @@
 				</view>
 			</view>
 			<view class="d-content">
-				<img v-for="(item,index) in imgList" @click="previewImage(index)" :style="{float:'left',width:imgWidth+'%',}" mode="widthFix" :src="item.src" alt="" :key="index" >
+				<img v-for="(item,index) in imgList" @click="previewImage(index)" :style="{float:'left',width:imgWidth+'%',}" mode="widthFix" :src="item.url" alt="" :key="index" >
 			</view>
 		</view>
 		
 		<!-- 底部操作菜单 -->
 		<view class="page-bottom">
-			<navigator url="/pages/index/index/" open-type="switchTab" class="p-b-btn">
+			<navigator url="/pages/index/index" open-type="switchTab" class="p-b-btn">
 				<text class="yticon icon-xiatubiao--copy"></text>
 				<text>首页</text>
 			</navigator>
 			<view style="background-color: rgb(245 208 104);color:#fff;" @click="toImgDow()" class="p-b-btn">
-				<text class="yticon icon-gouwuche"></text>
+				<text class="yticon icon-xia" style="color:#fff;"></text>
 				<text>下载</text>
 			</view>
 			<view class="p-b-btn" style="background-color: #DD524D; color:#fff;" @click="share">
-				<text class="yticon icon-shoucang"></text>
+				<text class="yticon icon-share" style="color:#fff;"></text>
 				<text>分享</text>
 			</view>
 		</view>
@@ -55,43 +55,37 @@
 				description: "内容",
 				imgText:'大图',
 				imgWidth:100,
-				imgList: [
-					{
-						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg'
-					},
-					{
-						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg'
-					},
-					{
-						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg'
-					}
-				],
+				imgList: [],
 				did:-1,
 			};
 		},
 		async onLoad(options){
 			//接收传值,id里面放的是标题，因为测试数据并没写id 
 			this.did = options.id;
-			// uni.request({
-			// 	url: "https://hm.zhugokeji.com/index.php/api/api/good_datail",                  
-			// 	method: 'get',
-			// 	data: {
-			// 		'aid':this.did,
-			// 	},
-			// 	dataType: 'json',
-			// 	success: res => {
-			// 		this.title=res.data.data.title;
-			// 		this.description=res.data.data.seo_description;
-			// 		this.imgList=res.data.data.img;
-			// 	}
-			// });
+			await uni.request({
+				url: "https://hm.zhugokeji.com/index.php/api/api/good_datail",
+				method: 'GET',
+				data: {
+					'aid':this.did,
+				},
+				dataType: 'json',
+				success: res => {
+					this.title=res.data.data.title;
+					this.description=res.data.data.seo_description;
+					this.imgList=res.data.data;
+				}
+			});
 			// this.shareList = await this.$api.json('shareList')
 		},
 		methods:{
 			toImgDow(){
-				uni.navigateTo({
-					url: `/pages/imgdow/imgdow?id=${this.did}`
-				})
+				if(this.imgList.length > 0){
+					uni.navigateTo({
+						url: `/pages/imgdow/imgdow?id=${this.did}`
+					})
+				}else{
+					 uni.showToast({title:"暂无图片", icon:"none"});
+				}
 			},
 			//图片大小切换
 			switchImgWidth(){
@@ -406,7 +400,6 @@
 		width: 100%;
 		height: 100upx;
 		background: rgba(255,255,255,.9);
-		
 		.p-b-btn{
 			display:flex;
 			flex-direction: column;
@@ -414,8 +407,8 @@
 			justify-content: center;
 			font-size: $font-sm;
 			color: $font-color-base;
-			width: 250upx;
-			height: 100upx;
+			width: 33.3333%;
+			height: 92upx;
 			.yticon{
 				font-size: 40upx;
 				line-height: 48upx;
