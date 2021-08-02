@@ -75,13 +75,9 @@
 					this.imgList=res.data.data;
 				}
 			});
-			// this.shareList = await this.$api.json('shareList')
 		},
 		methods:{
 			toImgDow(){
-				uni.navigateTo({
-					url: `/pages/imgdow/imgdow?id=${this.did}`
-				})
 				if(this.imgList.length > 0){
 					uni.navigateTo({
 						url: `/pages/imgdow/imgdow?id=${this.did}`

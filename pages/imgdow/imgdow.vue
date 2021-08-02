@@ -39,11 +39,11 @@
 			getOutInfo(){ 
 				return new Promise((resolve, reject) => {
 					uni.request({ 
-						url : `https://hm.zhugokeji.com/index.php/api/api/index_banner`,
+						url : `https://hm.zhugokeji.com/index.php/api/api/good_datail`,
 						method : "GET",
-						// data: {
-						// 	'aid':this.did,
-						// },
+						data: {
+							'aid':this.did,
+						},
 						success: (res) => {
 							let list = res.data.data;
 							let imgList = list.map(item=>{
