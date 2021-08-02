@@ -36,15 +36,14 @@
 			this.mountDealCount()
 		},
 		methods:{
-			// 多选
 			getOutInfo(){ 
 				return new Promise((resolve, reject) => {
 					uni.request({ 
-						url : `https://hm.zhugokeji.com/index.php/api/api/good_datail`,
+						url : `https://hm.zhugokeji.com/index.php/api/api/index_banner`,
 						method : "GET",
-						data: {
-							'aid':this.did,
-						},
+						// data: {
+						// 	'aid':this.did,
+						// },
 						success: (res) => {
 							let list = res.data.data;
 							let imgList = list.map(item=>{
@@ -63,18 +62,18 @@
 			async mountDealCount(){
 				await this.getOutInfo()
 			},
+			// 多选
 			choosed(item,index) {
 				var idx = this.checkBox.indexOf(index);
 				this.$nextTick(function(){
 					if(!this.imgList[index].isShow) {
 						// 添加类--选中状态
-						this.imgList[index].isShow= true;
 						this.checkBox.push(item);
 					} else {
-						// 选中再取消
-						this.imgList[index].isShow= false;
+						// 选中再取消]
 						this.checkBox.splice(idx, 1);
 					}
+					this.imgList[index].isShow= !this.imgList[index].isShow;
 				})
 			},
 			//图片下载
@@ -150,18 +149,16 @@
 			 height: 0px;
 			 width: 0px;
 			 position: absolute;
-			 right: 0;
-			 bottom: 0;
+			 right: 1%;
+			 bottom: 5%;
 			 color:#fff;
 			 /**对号大小*/
-			 font-size: 20upx;
-			 line-height: 16upx;
+			 font-size: 16upx;
+			 line-height: 18upx;
 			 border: 20upx solid;
 			 border-color: transparent #4884ff #4884ff transparent;
 		}
 	}
-	
-	
 	/* 底部操作菜单 */
 	.page-bottom{
 		position:fixed;
@@ -173,7 +170,6 @@
 		width: 100%;
 		height: 100upx;
 		background: rgba(255,255,255,.9);
-		
 		.p-b-btn{
 			display:flex;
 			flex-direction: column;

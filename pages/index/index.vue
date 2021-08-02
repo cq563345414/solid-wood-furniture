@@ -70,7 +70,6 @@
 				indexCateList:[],
 				indexGoodsList: [],
 				searchValue:'',
-				total:0
 			};
 		},
 		onLoad(options){
@@ -110,7 +109,7 @@
 			loadData(){  
 				//轮播图
 				uni.request({
-                    url: "https://hm.zhugokeji.com/index.php/api/api/index_banner",                  
+                    url: "https://hm.zhugokeji.com/index.php/api/api/index_banner",
                     method: 'get',
                     dataType: 'json',
 					success: res => {

@@ -79,6 +79,9 @@
 		},
 		methods:{
 			toImgDow(){
+				uni.navigateTo({
+					url: `/pages/imgdow/imgdow?id=${this.did}`
+				})
 				if(this.imgList.length > 0){
 					uni.navigateTo({
 						url: `/pages/imgdow/imgdow?id=${this.did}`
