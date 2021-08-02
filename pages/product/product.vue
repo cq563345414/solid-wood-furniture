@@ -103,7 +103,7 @@
 			// 预览图片
 			previewImage(index) {
 				let photoList = this.imgList.map(item => {
-					return item.src;
+					return item.url;
 				});
 				uni.previewImage({
 					current: index,     // 当前显示图片的链接/索引值

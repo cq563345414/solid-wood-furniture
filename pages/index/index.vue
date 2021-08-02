@@ -169,12 +169,11 @@
 			},
 			// 搜索
 			search(res) {
-				if(res != ''){
+				if(res.value){
 					uni.navigateTo({
 						url: `/pages/searchList/searchList?keyword=${res.value}`
 					})
 				}
-				
 			},
 			input(res) {
 			},
